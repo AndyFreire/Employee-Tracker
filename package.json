@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node employeeTracker.js"
+    "start": "node employeeTracker.js",
+    "watch": "nodemon employeeTracker.js"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,8 @@
     "console.table": "^0.10.0",
     "dotenv": "^8.2.0",
     "inquirer": "^7.3.3",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "nodemon": "^2.0.4",
+    "path": "^0.12.7"
   }
 }

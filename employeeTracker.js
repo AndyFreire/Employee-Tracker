@@ -1,21 +1,16 @@
+// const path = require('path');
+// require('dotenv').config({ path: require('find-config')('.env') })
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 var logo = require('asciiart-logo');
 var config = require('./package.json');
-require('dotenv').config();
 
 var connection = mysql.createConnection({
-    host: process.env.DB_HOST,
-  
-    // Your port; if not 3306
+    host: "localhost",
     port: process.env.PORT || 3306,
-  
-    // Your username
-    user: process.env.DB_USER,
-  
-    // Your password
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME
+    user: "root",
+    password: "",
+    database: "employeeDB"
   });
   
   connection.connect(function(err) {
@@ -97,6 +92,12 @@ function mainMenu() {
 
 function viewEmployees() {
     // TODO: get the employees from the db
+    var query = "SELECT employees.first_name, employees.last_name, roles.title FROM employees INNER JOIN roles ON employees.role_id=roles.id INNER JOIN departments ON roles.department_id=departments.name";
+
+    connection.query(query, function(err, res){
+        if (err) throw err;
+        console.table(res);
+    })
 
     // Display employees to the console with console.table
 

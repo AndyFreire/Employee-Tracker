@@ -1,0 +1,8 @@
+DROP DATABASE IF EXISTS employeeDB;
+CREATE DATABASE employeeDB;
+
+USE employeeDB;
+
+CREATE TABLE employee (
+    id INT NOT NULL AUTO
+)

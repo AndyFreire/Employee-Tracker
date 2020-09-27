@@ -2,20 +2,26 @@ var mysql = require("mysql");
 var inquirer = require("inquirer");
 var logo = require('asciiart-logo');
 var config = require('./package.json');
+require('dotenv').config();
 
-// var connection = mysql.createConnection({
-//     host: "localhost",
-
-//     // Your port; if not 3306
-//     port: 5000,
-
-//     // Your username
-//     user: process.env.userID,
-
-//     // Your password
-//     password: process.env.userPass,
-//     database: "employeeDB"
-// });
+var connection = mysql.createConnection({
+    host: process.env.DB_HOST,
+  
+    // Your port; if not 3306
+    port: process.env.PORT || 3306,
+  
+    // Your username
+    user: process.env.DB_USER,
+  
+    // Your password
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME
+  });
+  
+  connection.connect(function(err) {
+    if (err) throw err;
+    mainMenu();
+  });
 
 
 
@@ -49,10 +55,12 @@ function mainMenu() {
             switch (answers.mainMenu) {
                 case 'View Employees':
                     // Display all employees
+                    viewEmployees();
 
                     break;
                 case 'Add Employee':
                     // Add an employee
+                    addEmployee();
 
                     break;
                 case 'Edit Employee Role':
@@ -78,6 +86,7 @@ function mainMenu() {
                 case 'Exit':
                     // Exit the app
                     console.log("Now exiting the app.")
+                    connection.end();
 
                     break;
             }
@@ -86,4 +95,63 @@ function mainMenu() {
 
 }
 
-mainMenu();
+function viewEmployees() {
+    // TODO: get the employees from the db
+
+    // Display employees to the console with console.table
+
+    // return user to the main menu
+
+
+}
+
+function addEmployee() {
+
+    // TODO: Get a list of roles from the db and store in an array
+    const rolesArray = [];
+
+    // TODO: Get a list of all employees as objects and store in an array
+    let employeesArray = [];
+
+    // Ask for the employee's information
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'first_name',
+            message: "Enter the employee's first name",
+        },
+        {
+            type: 'input',
+            name: 'last_name',
+            message: "Enter the employee's last name",
+        },
+        {
+            type: 'list',
+            name: 'role',
+            message: "Enter the employee's role",
+            choices: rolesArray
+        },
+        {
+            type: 'list',
+            name: 'manager',
+            message: "Select this employee's manager",
+            choices: employeesArray
+        }
+    ]).then(answers => {
+
+        // Create a new employee from the inputs
+        let newEmployee = {
+            first_name: answers.first_name,
+            last_name: answers.last_name,
+            // TODO: Update this to return the role id of the employee selected
+            role_id: 0,
+            // TODO: Update this to return the employee id of the manager selected
+            manager_id: 0
+        }
+
+        // TODO: Push new employee to the DB THEN return user to the main menu
+
+
+    });
+}
+

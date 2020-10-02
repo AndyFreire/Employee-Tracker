@@ -1,10 +1,10 @@
 USE employeeDB;
 
 INSERT INTO employees (first_name, last_name, role_id, manager_id)
-VALUES ("Doug", "Barry", 1, 0);
+VALUES ("Doug", "Barry", 1, 1);
 
 INSERT INTO employees (first_name, last_name, role_id, manager_id)
-VALUES ("Lucy", "Marie", 2, 1);
+VALUES ("Lucy", "Marie", 2, 2);
 
 INSERT INTO employees (first_name, last_name, role_id, manager_id)
 VALUES ("Josh", "Internburg", 3, 1);

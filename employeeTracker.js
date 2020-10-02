@@ -1,22 +1,23 @@
 // const path = require('path');
-// require('dotenv').config({ path: require('find-config')('.env') })
+require('dotenv').config()
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 var logo = require('asciiart-logo');
 var config = require('./package.json');
 
 var connection = mysql.createConnection({
-    host: "localhost",
+    host: process.env.DB_HOST,
     port: process.env.PORT || 3306,
-    user: "root",
-    password: "",
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
     database: "employeeDB"
-  });
-  
-  connection.connect(function(err) {
+});
+
+connection.connect(function (err) {
     if (err) throw err;
+    renderLogo();
     mainMenu();
-  });
+});
 
 
 
@@ -25,8 +26,6 @@ function renderLogo() {
 }
 
 function mainMenu() {
-    renderLogo();
-
     inquirer
         .prompt({
             type: 'list',
@@ -68,6 +67,7 @@ function mainMenu() {
                     break;
                 case 'Remove Employee':
                     // Remove the employee
+                    removeEmployee();
 
                     break;
                 case 'View Departments':
@@ -92,27 +92,24 @@ function mainMenu() {
 
 function viewEmployees() {
     // TODO: get the employees from the db
-    var query = "SELECT employees.first_name, employees.last_name, roles.title FROM employees INNER JOIN roles ON employees.role_id=roles.id INNER JOIN departments ON roles.department_id=departments.name";
+    // var query = "SELECT employees.first_name, employees.last_name, roles.title FROM employees INNER JOIN roles ON employees.role_id=roles.id";
 
-    connection.query(query, function(err, res){
+    var query = "SELECT * FROM employees";
+
+    connection.query(query, function (err, res) {
         if (err) throw err;
         console.table(res);
+        mainMenu();
     })
-
-    // Display employees to the console with console.table
-
-    // return user to the main menu
-
-
 }
 
 function addEmployee() {
 
     // TODO: Get a list of roles from the db and store in an array
-    const rolesArray = [];
+    const rolesArray = ["Manager", "Engineer", "Intern"];
 
     // TODO: Get a list of all employees as objects and store in an array
-    let employeesArray = [];
+    let employeesArray = [1, 2, 3];
 
     // Ask for the employee's information
     inquirer.prompt([
@@ -150,9 +147,54 @@ function addEmployee() {
             manager_id: 0
         }
 
-        // TODO: Push new employee to the DB THEN return user to the main menu
+        // TODO: add employee to the db
+        connection.query("INSERT INTO employees SET ?", newEmployee, function (err) {
+            if (err) throw err;
+            console.log("Employee added successfully!");
+            // take user back to main menu
+            mainMenu();
+        });
 
+    });
+}
 
+function removeEmployee() {
+    var query = "SELECT first_name, last_name, id FROM employees";
+    let employees = []
+
+    connection.query(query, function (err, res) {
+        if (err) throw err;
+
+        employees = res;
+
+        // console.log(employees);
+
+        employeeNames = res.map(employee => {
+            return `${employee.first_name} ${employee.last_name}`;
+        });
+
+        inquirer.prompt([
+            {
+                type: 'list',
+                name: 'employeeToDelete',
+                message: "Which employee would you like to delete?",
+                choices: employeeNames
+            }
+        ]).then(answers => {
+            const employeeIndex = employeeNames.indexOf(answers.employeeToDelete);
+
+            employeeID = employees[employeeIndex].id;
+            // console.log("Employee id to delete = " + employeeID);
+
+            // TODO: delete employee from the db
+            connection.query("DELETE FROM employees WHERE id= ?", [employeeID], function (err) {
+                if (err) throw err;
+                console.log("Employee deleted successfully!");
+                // take user back to main menu
+                mainMenu();
+            });
+    
+        });
     });
 }
 
